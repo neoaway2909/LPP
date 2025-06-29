@@ -2,13 +2,14 @@
 let order = {};
 const tableData = {};
 let currentTable = 1;
+let tableNames = JSON.parse(localStorage.getItem("tableNames")) || {};
 
 // สร้างรายการโต๊ะ
 const dropdown = document.getElementById("tableDropdown");
 const tableLabel = document.getElementById("currentTableLabel");
-for (let i = 1; i <= 37; i++) {
+for (let i = 1; i <= 50; i++) {
   const btn = document.createElement("button");
-  btn.textContent = `โต๊ะ ${i}`;
+  btn.textContent = tableNames[i] || `โต๊ะ ${i}`;
   btn.onclick = () => switchTable(i);
   dropdown.appendChild(btn);
 }
@@ -18,14 +19,47 @@ function toggleTableDropdown() {
 }
 
 function switchTable(tableNumber) {
-  saveCurrentOrder();
-  currentTable = tableNumber;
-  loadCurrentOrder();
-  tableLabel.textContent = currentTable;
+  saveCurrentOrder(); // บันทึกของโต๊ะปัจจุบัน
+
+  currentTable = tableNumber; // 👈 ต้องเปลี่ยนก่อนโหลดออเดอร์
+
+  loadCurrentOrder(); // โหลดของโต๊ะใหม่
+
+  tableLabel.textContent = tableNames[currentTable] || `โต๊ะ ${currentTable}`; // แสดงชื่อใหม่ให้ถูกต้อง
+
   dropdown.style.display = "none";
-  saveDataToStorage();  // บันทึกข้อมูลลง localStorage
+  saveDataToStorage(); // บันทึกข้อมูลรวมทั้งหมด
 }
 
+
+function renameTable() {
+  const newName = document.getElementById("renameInput").value.trim();
+  if (!newName) {
+    alert("กรุณาใส่ชื่อใหม่");
+    return;
+  }
+
+  tableNames[currentTable] = newName;
+  localStorage.setItem("tableNames", JSON.stringify(tableNames));
+
+  updateTableDropdown(); // 👉 รีเฟรชชื่อใน dropdown
+  tableLabel.textContent = newName;
+  alert(`ตั้งชื่อโต๊ะ ${currentTable} เป็น "${newName}" แล้ว`);
+}
+
+function updateTableDropdown() {
+  dropdown.innerHTML = ""; // เคลียร์ก่อน
+  for (let i = 1; i <= 50; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = tableNames[i] || `โต๊ะ ${i}`;
+    btn.onclick = () => switchTable(i);
+    dropdown.appendChild(btn);
+  }
+}
+window.onload = () => {
+  updateTableDropdown();
+  tableLabel.textContent = tableNames[currentTable] || `โต๊ะ ${currentTable}`;
+};
 function saveCurrentOrder() {
   tableData[currentTable] = JSON.parse(JSON.stringify(order));
 }
@@ -624,5 +658,23 @@ let customMenuData = {
   food: [],
   drink: [],
 };
+function clearAllOrders() {
+  const confirmClear = confirm("คุณแน่ใจหรือไม่ว่าต้องการล้างออเดอร์ทั้งหมดของทุกโต๊ะ?");
+  if (!confirmClear) return;
+
+  // ล้างข้อมูลทั้งหมด
+  for (let i = 1; i <= 37; i++) {
+    tableData[i] = {};
+  }
+
+  order = {};
+  saveDataToStorage();
+  updateSummary();
+  alert("ล้างออเดอร์ทุกโต๊ะเรียบร้อยแล้ว");
+  tableNames = {};
+localStorage.removeItem("tableNames");
+updateTableDropdown();
+
+}
 
 

@@ -513,4 +513,42 @@ body {
 #menuManage button:hover {
   background-color: #2563eb;
 }
-  
+#renameTableSection {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#renameTableSection label {
+  font-weight: 600;
+}
+
+#renameInput {
+  padding: 8px 12px;
+  font-size: 16px;
+  width: 220px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+
+#renameInput:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+#renameTableSection button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#renameTableSection button:hover {
+  background-color: #218838;
+}

@@ -369,4 +369,98 @@ body {
   display: inline-block;
 }
 
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .order-section,
+  .summary,
+  .ccc.summary {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tabs button {
+    margin: 5px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  #food-menu,
+  #drink-menu {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 10px;
+  }
+
+  .menu-item img {
+    max-height: 80px;
+  }
+
+  .navigate-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+  }
+
+  #tableDropdown {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  #tableDropdown button {
+    font-size: 1em;
+  }
+
+  #currentTableLabel {
+    font-size: 1em;
+    padding: 8px 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .summary ul {
+    padding-left: 0;
+  }
+
+  .summary li {
+    font-size: 0.95em;
+  }
+
+  .order-summary-button,
+  .order-summary-button.remove {
+    padding: 4px 10px;
+    font-size: 0.9em;
+  }
+
+  .order-summary-qty {
+    font-size: 0.9em;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .pagination button {
+    margin: 5px 2px;
+    width: 100%;
+    max-width: 120px;
+  }
+}
+
   

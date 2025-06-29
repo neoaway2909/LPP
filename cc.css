@@ -133,12 +133,14 @@ body {
   }
   
   #tableDropdownBtn {
-    padding: 10px 15px;
+    
     background: #007bff;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
   .pagination {
     margin-top: 10px;
@@ -164,6 +166,7 @@ body {
     padding: 20px;
     box-sizing: border-box;
     flex-wrap: wrap;
+    position: relative;
   }
  
 .order-section {
@@ -232,7 +235,7 @@ body {
     background-color: #5a6268;
   }
   #moveTableSection {
-    margin-top: 20px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -286,14 +289,17 @@ body {
   max-height: 300px;      /* กำหนดความสูงสูงสุดให้เลื่อนดูได้ */
   overflow-y: auto;
   width: 180px;           /* ขนาดกว้าง */
-  border: 1.8px solid #007bff;
+
   border-radius: 8px;
-  background-color: #000000;
+
   padding: 8px;
   box-shadow: 0 4px 8px rgba(0,123,255,0.2);
   position: absolute;
   z-index: 1000;
   font-size: 1.1em;
+  background-color: #111827; /* สีดำเข้มแบบ navy black */
+  border-color: #3b82f6; /* สีฟ้าอ่อนนุ่ม */
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
 }
 
 /* ปุ่มใน dropdown */
@@ -303,9 +309,9 @@ body {
   padding: 10px 14px;
   margin-bottom: 6px;
   font-size: 1.1em;
-  color: #007bff;
-  background-color: #010000;
-  border: 1.5px solid #007bff;
+  background-color: #1f2937; /* สีเทาเข้ม */
+  border-color: #3b82f6;
+  color: #d1d5db; /* สีเทาอ่อน */
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
@@ -313,7 +319,7 @@ body {
 }
 
 #tableDropdown button:hover {
-  background-color: #007bff;
+  background-color: #3b82f6;
   color: white;
 }
 
@@ -369,19 +375,23 @@ body {
   display: inline-block;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   body {
     padding: 10px;
   }
 
   .container {
-    flex-direction: column;
-    padding: 10px;
-    gap: 10px;
+    flex-direction: row; /* เปลี่ยนจาก column เป็น row เพื่อให้ layout เป็นแนวนอน */
+    flex-wrap: wrap; /* เพื่อให้พวกมันลดขนาดได้ */
+    justify-content: space-between; /* เว้นที่ว่างซ้ายขวา */
+    
   }
 
   .order-section,
-  .summary,
+  .summary{
+  flex: 1 1 48%; /* กินประมาณครึ่งหน้าจอ */
+    min-width: 48%;
+  }
   .ccc.summary {
     width: 100% !important;
     flex: 1 1 100% !important;

@@ -27,6 +27,7 @@
             <button class="tab-btn" onclick="showPage('drink', event)">เครื่องดื่ม</button>
           </div>
         </div>
+    
   
         <div id="food" class="menu-page active">
             <div id="food-menu"></div>
@@ -37,6 +38,33 @@
           <div id="drink-menu"></div>
           <div class="pagination" id="drink-pagination"></div>
         </div>
+        <div id="custom-menu-container">
+
+        <div id="menuManage">
+          <h3>➕ เพิ่มเมนู</h3>
+          <form id="addMenuForm">
+            <select id="addType" title="หมวด">
+              <option value="food">อาหาร</option>
+              <option value="drink">เครื่องดื่ม</option>
+            </select>
+            <input type="number" id="addPage" min="0" placeholder="หน้า" title="หน้า" required>
+            <input type="text" id="addName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
+            <input type="number" id="addPrice" min="0" placeholder="ราคา" title="ราคา" required>
+            <button type="submit" title="เพิ่มเมนู">เพิ่ม</button>
+          </form>
+        
+          <h3>🗑️ ลบเมนู</h3>
+          <form id="removeMenuForm">
+            <select id="removeType" title="หมวด">
+              <option value="food">อาหาร</option>
+              <option value="drink">เครื่องดื่ม</option>
+            </select>
+            <input type="number" id="removePage" min="0" placeholder="หน้า" title="หน้า" required>
+            <input type="text" id="removeName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
+            <button type="submit" title="ลบเมนู">ลบ</button>
+          </form>
+        </div>
+      </div>
       </div>
  
       
@@ -53,7 +81,7 @@
       </div>
     </div>
   
- 
+
       
       
    

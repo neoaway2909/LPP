@@ -47,8 +47,23 @@ function showPage(page, event) {
 }
 
 function addItem(name) {
+  let price = 0;
+
+  // ถ้ามี input ราคาจริงๆ ให้ใช้ราคานั้น
   const input = document.getElementById(`price-${name}`);
-  const price = input ? parseFloat(input.value) : 0;
+  if (input) {
+    price = parseFloat(input.value);
+    if (isNaN(price)) price = 0;
+  }
+
+  // ถ้าไม่มี input หรือราคาไม่ถูกต้อง ให้ใช้ getPrice() ที่อ่านจาก localStorage หรือราคาเริ่มต้น
+  if (price === 0) {
+    const menuItem = findMenuItemByName(name);
+    if (menuItem) {
+      price = getPrice(menuItem);
+    }
+  }
+
   if (!order[name]) {
     order[name] = { qty: 1, price };
   } else {
@@ -56,7 +71,20 @@ function addItem(name) {
     order[name].price = price;
   }
   updateSummary();
-  saveDataToStorage();  // บันทึกข้อมูลลง localStorage
+  saveDataToStorage();
+}
+
+function findMenuItemByName(name) {
+  for (const type in menuData) {
+    for (const page of menuData[type]) {
+      for (const item of page) {
+        if (item.name === name) {
+          return item;
+        }
+      }
+    }
+  }
+  return null;
 }
 
 function removeItem(name) {
@@ -76,7 +104,10 @@ function updateSummary() {
 
   for (let item in order) {
     const itemData = order[item];
-    const itemTotal = itemData.qty * itemData.price;
+
+    // ✅ ใช้ getPrice() เพื่อดึงราคาปัจจุบันที่อาจมีการอัปเดต
+    const currentPrice = getPrice({ name: item, price: itemData.price });
+    const itemTotal = itemData.qty * currentPrice;
     sum += itemTotal;
 
     const li = document.createElement("li");
@@ -96,6 +127,7 @@ function updateSummary() {
 
   total.textContent = `฿${sum}`;
 }
+
 
 const menuData = {
     food: [
@@ -211,6 +243,74 @@ const menuData = {
 
 let currentFoodPage = 0;
 let currentDrinkPage = 0;
+ 
+function toSafeKey(name) {
+  return encodeURIComponent(name);
+}
+
+function getPrice(menuItem) {
+  const key = `price_${toSafeKey(menuItem.name)}`;
+  const saved = localStorage.getItem(key);
+  const parsed = parseFloat(saved);
+  return isNaN(parsed) ? menuItem.price : parsed;
+}
+
+function setPrice(menuItem, newPrice) {
+  const key = `price_${toSafeKey(menuItem.name)}`;
+  localStorage.setItem(key, newPrice);
+  menuItem.price = newPrice;
+}
+
+
+function updateItemPrice(name, newPrice) {
+  newPrice = parseFloat(newPrice);
+  if (isNaN(newPrice)) return;
+
+  const safeKey = `price_${toSafeKey(name)}`;
+
+  // อัปเดตในเมนู
+  const allItems = menuData.food.flat().concat(menuData.drink.flat());
+  const targetItem = allItems.find(item => item.name === name);
+  if (targetItem) {
+    targetItem.price = newPrice;
+    localStorage.setItem(safeKey, newPrice);
+  }
+
+  if (order[name]) {
+    order[name].price = newPrice;
+  } else {
+    order[name] = { qty: 0, price: newPrice };
+  }
+
+  updateSummary();
+  saveDataToStorage();
+}
+
+
+// ดึงราคาที่แก้ไขจาก localStorage (ถ้ามี)
+window.addEventListener("DOMContentLoaded", () => {
+  loadDataFromStorage();   
+  loadCustomMenuData();
+  renderMenu("food", currentFoodPage);
+  renderMenu("drink", currentDrinkPage);
+  renderCustomItems();
+
+  // ✅ ดึงราคาใหม่ของลาบเป็ด
+  const priceToShow = getPrice(menuData.food[0][0]);
+  console.log(`ราคาลาบเป็ด: ${priceToShow} บาท`);
+
+  // ✅ วนลูปแสดงชื่อและราคาทั้งหมด
+  menuData.food.forEach(page => {
+    page.forEach(item => {
+      const price = getPrice(item);
+      console.log(`${item.name}: ${price} บาท`);
+
+      // ตัวอย่าง: อัปเดตราคาลาบเป็ด
+      // if(item.name === "ลาบเป็ด") setPrice(item, 90);
+    });
+  });
+});
+
 
 function renderMenu(type, page) {
   const container = document.getElementById(`${type}-menu`);
@@ -221,16 +321,19 @@ function renderMenu(type, page) {
   container.innerHTML = "";
   menu.forEach((item) => {
     const imgSrc = item.image || "images/placeholder.jpg";
-    const itemOrder = order[item.name];
-    const itemPrice = itemOrder ? itemOrder.price : item.price;
+    const itemPrice = getPrice(item); // ✅ ใช้ราคาจาก LocalStorage
 
     const div = document.createElement("div");
     div.className = "menu-item";
     div.innerHTML = `
     <img src="${imgSrc}" alt="${item.name}" />
     <span>${item.name}</span>
-    <input type="number" id="price-${item.name}" value="${itemPrice}" style="width:50px; font-size:0.9em;" 
-           onchange="updateItemPrice('${item.name}', this.value)" />
+<input type="number" 
+       id="price-${toSafeKey(item.name)}" 
+       value="${itemPrice}" 
+       style="width:50px; font-size:0.9em;" 
+       onchange="updateItemPrice('${item.name}', this.value)" />
+
     <div class="controls">
       <button onclick="addItem('${item.name}')">+</button>
       <button class="remove" onclick="removeItem('${item.name}')">-</button>
@@ -347,12 +450,179 @@ function onMoveTable() {
   moveOrderToTable(currentTable, toTable);
   populateMoveTableOptions();  // อัปเดตตัวเลือกโต๊ะใหม่หลังย้าย
 }
-function updateItemPrice(name, newPrice) {
-  newPrice = parseFloat(newPrice);
-  if (order[name]) {
-    order[name].price = newPrice;
-  } else {
-    order[name] = { qty: 0, price: newPrice };
+
+// เพิ่มเมนู
+document.getElementById("addMenuForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const type = document.getElementById("addType").value;
+  const pageValue = document.getElementById("addPage").value;
+  const name = document.getElementById("addName").value.trim();
+  const price = parseFloat(document.getElementById("addPrice").value);
+
+  const page = parseInt(pageValue, 10) - 1; // ลด 1 เพื่อให้เป็น index 0-based
+
+
+  if (!name || isNaN(price) || price < 0) {
+    alert("กรุณากรอกชื่อและราคาที่ถูกต้อง");
+    return;
   }
-  saveDataToStorage();  // บันทึกราคาใหม่ทันที
+
+  if (!Number.isInteger(page) || page < 0) {
+    alert("กรุณาระบุหมายเลขหน้าเป็นจำนวนเต็มบวก (1 ขึ้นไป)");
+    return;
+  }
+
+  console.log("เพิ่มเมนูที่หน้า (index):", page);
+  addMenuItem(type, page, name, price);
+  this.reset();
+});
+
+// ลบเมนู
+document.getElementById("removeMenuForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const type = document.getElementById("removeType").value;
+  const pageValue = document.getElementById("removePage").value;
+  const name = document.getElementById("removeName").value.trim();
+
+  const page = parseInt(pageValue, 10) - 1; // ลด 1 ให้เป็น index 0-based
+
+  if (!name) {
+    alert("กรุณาระบุชื่อเมนูที่จะลบ");
+    return;
+  }
+  if (!Number.isInteger(page) || page < 0) {
+    alert("กรุณาระบุหมายเลขหน้าเป็นจำนวนเต็มบวก (1 ขึ้นไป)");
+    return;
+  }
+
+  removeMenuItem(type, page, name);
+  this.reset();
+});
+
+
+function addMenuItem(type, page, name, price) {
+  if (!menuData[type]) {
+    alert("ประเภทเมนูไม่ถูกต้อง");
+    return;
+  }
+
+  
+  // แก้ไข: สร้างหน้าใหม่เฉพาะเมื่อไม่มี
+  if (!Array.isArray(menuData[type][page])) {
+    menuData[type][page] = [];
+  }
+
+  const newItem = { name, price, image: "tom.jpg" };
+  menuData[type][page].push(newItem);
+  setPrice(newItem, price);
+
+ // แก้ไข customMenuData ด้วย
+ if (!customMenuData[type]) {
+  customMenuData[type] = [];
 }
+if (!Array.isArray(customMenuData[type][page])) {
+  customMenuData[type][page] = [];
+}
+
+customMenuData[type][page].push(newItem);
+saveCustomMenuData();
+
+console.log(`📌 เพิ่มเมนูที่หน้า (ใน addMenuItem): ${page}`);
+console.log(`menuData[${type}].length ปัจจุบัน: ${menuData[type].length}`);
+renderMenu(type, page);
+}
+
+
+
+function renderCustomItems() {
+  const customContainer = document.getElementById("custom-menu-container"); // ตรวจสอบว่า ID ตรงกับ HTML
+  if (!customContainer) {
+    console.warn("ไม่พบ container สำหรับ custom menu");
+    return;
+  }
+
+  const savedData = localStorage.getItem("customMenuData");
+  if (!savedData) return;
+
+  try {
+    const parsedData = JSON.parse(savedData);
+
+    customContainer.innerHTML = ""; // ล้างของเก่าก่อนแสดงใหม่
+
+    for (const type in parsedData) {
+      parsedData[type].forEach((item) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "menu-item";
+        itemDiv.innerHTML = `
+          <p><strong>${item.name}</strong></p>
+          <p>ราคา: ${item.price} บาท</p>
+        `;
+        customContainer.appendChild(itemDiv);
+      });
+    }
+  } catch (e) {
+    console.error("renderCustomItems() error:", e);
+  }
+}
+function removeMenuItem(type, page, name) {
+  const savedData = localStorage.getItem("customMenu");
+  if (!savedData) return;
+
+  const parsedData = JSON.parse(savedData);
+
+  if (!parsedData[type] || !parsedData[type][page]) return;
+
+  // ลบรายการตามชื่อ
+  parsedData[type][page] = parsedData[type][page].filter(item => item.name !== name);
+
+  // ถ้าหน้านั้นว่างแล้วให้ลบทิ้ง
+  if (parsedData[type][page].length === 0) {
+    parsedData[type].splice(page, 1);
+  }
+
+  // อัปเดตตัวแปรในหน่วยความจำ
+  customMenuData = parsedData;
+
+  // บันทึกกลับ
+  saveCustomMenuData();
+
+  // อัปเดตเมนูหลัก
+  menuData[type][page] = menuData[type][page].filter(item => item.name !== name);
+
+  renderMenu(type, page); // อัปเดตหน้าเมนู
+  renderCustomItems();    // อัปเดตรายการที่แสดงอยู่
+}
+
+function saveCustomMenuData() {
+  localStorage.setItem("customMenu", JSON.stringify(customMenuData));
+}
+
+// โหลด custom menu
+function loadCustomMenuData() {
+  const saved = localStorage.getItem("customMenu");
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    // Merge เข้า menuData
+    for (let type in loaded) {
+      if (!menuData[type]) menuData[type] = [];
+      loaded[type].forEach((pageItems, pageIndex) => {
+        if (!menuData[type][pageIndex]) {
+          menuData[type][pageIndex] = pageItems;
+        } else {
+          menuData[type][pageIndex] = [
+            ...menuData[type][pageIndex],
+            ...pageItems,
+          ];
+        }
+      });
+    }
+    customMenuData = loaded;
+  }
+}
+let customMenuData = {
+  food: [],
+  drink: [],
+};
+
+

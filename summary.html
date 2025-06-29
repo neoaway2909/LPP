@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>สรุปรายการ</title>
+  <style>
+ body {
+    font-family: 'Sarabun', sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    text-align: center; /* ✅ จัดข้อความตรงกลางแนวนอน */
+    
+  }
+  .summary {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: auto;
+    align-items: center; /* ✅ จัดลูกด้านในตรงกลางแนวนอน */
+  }
+  .summary h2 {
+    text-align: center;
+  }
+  .summary ul {
+    list-style: none;
+    padding: 0;
+  }
+  .summary li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+    text-align: center; /* ✅ ข้อความในแต่ละ element อยู่ตรงกลาง */
+  }
+  .total {
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+    
+  }
+  .back {
+    display: block;
+    margin-top: 30px;
+    text-align: center;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+  }
+  .navigate-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 20px;
+}
+
+.navigate-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.navigate-button.back {
+  background-color: #6c757d;
+}
+
+.navigate-button.back:hover {
+  background-color: #5a6268;
+}
+.navigate-button.print {
+  background-color: #28a745;
+}
+
+.navigate-button.print:hover {
+  background-color: #218838;
+}
+
+/* ซ่อนปุ่มที่ไม่ต้องการพิมพ์ */
+@media print {
+  .navigate-button,
+  .back {
+    display: none !important;
+  }
+
+  body {
+    width: 80mm;
+    font-size: 10pt;
+  }
+
+
+  .summary {
+    padding: 10px;
+    font-size: 9pt;
+    page-break-after: auto;
+    page-break-before: auto;
+  
+  }
+
+  .summary h2 {
+    font-size: 1em;
+    margin-bottom: 10px;
+  }
+
+  .summary ul {
+    font-size: 0.5em;
+  }
+
+  .total {
+    font-size: 10pt;
+    margin-top: 10px;
+  }
+  .summary li {
+    padding: 4px 0;
+    font-size: 9pt;
+  }
+
+  .datetime, .bill-id {
+    font-size: 9pt;
+    margin: 4px 0;
+    text-align: center;
+  }
+  img.logo {
+    max-width: 80px;
+    margin-bottom: 5px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="logo">
+   
+
+  </div>
+  <div class="summary">
+    <img  src="logo.png" class="logo" width="100px">
+    <h2>เช็คบิลโต๊ะ <span id="table-number"></span></h2>
+    <p class="datetime">ออกใบเสร็จ: <span id="receipt-datetime"></span></p>
+
+    <ul id="order-list"></ul>
+    <p class="total">รวมทั้งหมด: <span id="total">฿0</span></p>
+    <p class="bill-id">รหัสบิล: <span id="bill-id"></span></p>
+
+   <center> <button class="navigate-button back" onclick="window.location.href='cc.html'">
+      ← กลับไปยังหน้าสั่งอาหาร
+    </button></center>
+    <button class="navigate-button print" onclick="printReceipt()">🖨️ พิมพ์ใบเสร็จ</button>
+
+
+
+
+
+  </div>
+
+  <script>
+    
+    // ดึงข้อมูลจาก localStorage
+    const tableOrders = JSON.parse(localStorage.getItem("tableOrders")) || {};
+    const currentTable = localStorage.getItem("currentTable") || "1";
+
+    document.getElementById("table-number").textContent = currentTable;
+    const now = new Date();
+const formattedDate = now.toLocaleString("th-TH", {
+  year: "numeric", month: "long", day: "numeric",
+  hour: "2-digit", minute: "2-digit"
+});
+document.getElementById("receipt-datetime").textContent = formattedDate;
+
+
+    const order = tableOrders[currentTable] || {};
+
+    const list = document.getElementById("order-list");
+    const total = document.getElementById("total");
+
+    let sum = 0;
+
+    for (let item in order) {
+      const li = document.createElement("li");
+      const itemTotal = order[item].qty * order[item].price;
+      li.textContent = `${item} x ${order[item].qty} = ฿${itemTotal}`;
+      list.appendChild(li);
+      sum += itemTotal;
+    }
+
+    total.textContent = `฿${sum}`;
+    const pad = (n) => n.toString().padStart(2, '0');
+const billId = `T${pad(currentTable)}-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+document.getElementById("bill-id").textContent = billId;
+function printReceipt() {
+    window.print(); // พิมพ์ก่อน
+
+    setTimeout(() => {
+      // หลังจากพิมพ์แล้ว ล้างออเดอร์โต๊ะนี้
+      const tableOrders = JSON.parse(localStorage.getItem("tableOrders")) || {};
+      const currentTable = localStorage.getItem("currentTable") || "1";
+
+      delete tableOrders[currentTable]; // ลบออเดอร์ของโต๊ะนี้
+      localStorage.setItem("tableOrders", JSON.stringify(tableOrders));
+
+      // แจ้งเตือนและโหลดหน้าใหม่หรือกลับหน้าหลัก
+      alert("พิมพ์ใบเสร็จเรียบร้อย โต๊ะถูกเคลียร์แล้ว");
+      window.location.href = "cc.html"; // กลับหน้าสั่งอาหาร
+    }, 500); // รอ 0.5 วินาที เพื่อให้ print เสร็จ
+  }
+  </script>
+</body>
+</html>

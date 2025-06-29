@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ลาบเป็ด - สั่งอาหาร</title>
+  <link href="cc.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+      <div class="order-section">
+        <h1>ลาบเป็ด</h1>
+        <div style="position: relative; margin-bottom: 20px;">
+          <button onclick="toggleTableDropdown()" id="tableDropdownBtn">
+            โต๊ะปัจจุบัน: <span class="nn" id="currentTableLabel">1</span> ▼
+          </button>
+          <div id="moveTableSection">
+            <label for="moveToTableSelect">ย้ายออเดอร์ไปโต๊ะ:</label>
+            <select id="moveToTableSelect"></select>
+            <button onclick="onMoveTable()">ย้ายโต๊ะ</button>
+          </div>
+          
+          <div id="tableDropdown" style="display: none; position: absolute; background: #fff; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; z-index: 1000; width: 200px;"></div>
+  
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showPage('food', event)">อาหาร</button>
+            <button class="tab-btn" onclick="showPage('drink', event)">เครื่องดื่ม</button>
+          </div>
+        </div>
+  
+        <div id="food" class="menu-page active">
+            <div id="food-menu"></div>
+            <div class="pagination" id="food-pagination"></div>
+          </div>
+          
+        <div id="drink" class="menu-page">
+          <div id="drink-menu"></div>
+          <div class="pagination" id="drink-pagination"></div>
+        </div>
+      </div>
+ 
+      
+      <div class="ccc summary">
+        <h2>สรุปรายการ</h2>
+        <ul id="order-list"></ul>
+        <p class="total">
+          รวมทั้งหมด: <span id="total">฿0</span>
+        </p>
+        <center><button class="navigate-button" onclick="saveCurrentOrderToStorage(); window.location.href='summary.html';">
+          เช็คบิล
+        </button></center>
+      
+      </div>
+    </div>
+  
+ 
+      
+      
+   
+
+    <script src="cc.js"></script>
+</body>
+</html>

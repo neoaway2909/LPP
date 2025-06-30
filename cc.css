@@ -60,7 +60,6 @@ body {
   .menu-item {
     display: flex;
     flex-direction: column;
-   
     align-items: center;
     padding: 10px;
     border-radius: 8px;
@@ -176,6 +175,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     min-width: 0; /* ป้องกันการ overflow */
+    width: 300px;
   }
 
   .ccc.summary {
@@ -185,6 +185,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     height: fit-content; /* ให้ความสูงพอดีกับเนื้อหา */
+    margin-top: 150px;
   }
   body, html {
     margin: 0; padding: 0;
@@ -370,22 +371,24 @@ body {
   }
 
   .container {
-    flex-direction: row; /* เปลี่ยนจาก column เป็น row เพื่อให้ layout เป็นแนวนอน */
-    flex-wrap: wrap; /* เพื่อให้พวกมันลดขนาดได้ */
-    justify-content: space-between; /* เว้นที่ว่างซ้ายขวา */
+    flex-direction: row !important; /* บังคับแนวนอน */
+    flex-wrap: nowrap;              /* ไม่ให้ซ้อน */
+    overflow-x: auto;               /* ถ้าแน่นก็เลื่อนได้ */
     
   }
 
-  .order-section,
+  .order-section{
+    flex: 1 1 65%;
+    min-width: 65%;
+  }
   .summary{
   flex: 1 1 48%; /* กินประมาณครึ่งหน้าจอ */
     min-width: 48%;
   }
-  .ccc.summary {
-    width: 100% !important;
-    flex: 1 1 100% !important;
-    padding: 15px;
-    box-sizing: border-box;
+  .summary, .ccc.summary {
+    flex: 1 1 35%;
+    min-width: 35%;
+    width: auto !important;         /* ยกเลิก 100% ที่เคยใส่ */
   }
 
   .tabs {
@@ -462,7 +465,7 @@ body {
   }
 }
 #menuManage {
-  margin-top: 0px;
+  margin: auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   max-width: 550px;
   background: #f9f9f9;
@@ -470,7 +473,7 @@ body {
   padding: 15px 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   font-size: 14px;
-  margin-left: 170px;
+  
 }
 #menuManage h3 {
   margin-top: 16px;
@@ -551,3 +554,63 @@ body {
 #renameTableSection button:hover {
   background-color: #218838;
 }
+#moveTableSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#moveTableSection > * {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+}
+
+#renameTableSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#renameTableSection input,
+#renameTableSection button {
+  width: 100%;
+}
+
+/* Responsive behavior */
+@media (min-width: 768px) {
+  #moveTableSection {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #moveTableSection > * {
+    flex: 0 0 auto;
+  }
+
+  #renameTableSection {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #renameTableSection input {
+    width: auto;
+  }
+
+  #renameTableSection button {
+    margin-left: 6px;
+  }
+}
+#food.menu-page.active #food-menu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+#drink.menu-page.active #drink-menu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+

@@ -9,10 +9,7 @@
 <body>
     <div class="container">
       <div class="order-section">
-        <div style="position: relative; margin-bottom: 20px;">
-          <button onclick="toggleTableDropdown()" id="tableDropdownBtn">
-            โต๊ะปัจจุบัน: <span class="nn" id="currentTableLabel">1</span> ▼
-          </button>
+        <div style="position: relative; margin-bottom: 5px;">
           <div id="moveTableSection">
             <label for="moveToTableSelect">ย้ายออเดอร์ไปโต๊ะ:</label>
             <select id="moveToTableSelect"></select>
@@ -26,6 +23,10 @@
               ล้างออเดอร์ทุกโต๊ะ
             </button>
           </div>
+          <button onclick="toggleTableDropdown()" id="tableDropdownBtn">
+            โต๊ะปัจจุบัน: <span class="nn" id="currentTableLabel">1</span> ▼
+          </button>
+          
           
           <div id="tableDropdown" style="display: none; position: absolute; background: #fff; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; z-index: 1000; width: 200px;"></div>
   
@@ -47,30 +48,7 @@
         </div>
         <div id="custom-menu-container">
 
-        <div id="menuManage">
-          <h3>➕ เพิ่มเมนู</h3>
-          <form id="addMenuForm">
-            <select id="addType" title="หมวด">
-              <option value="food">อาหาร</option>
-              <option value="drink">เครื่องดื่ม</option>
-            </select>
-            <input type="number" id="addPage" min="0" placeholder="หน้า" title="หน้า" required>
-            <input type="text" id="addName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
-            <input type="number" id="addPrice" min="0" placeholder="ราคา" title="ราคา" required>
-            <button type="submit" title="เพิ่มเมนู">เพิ่ม</button>
-          </form>
-        
-          <h3>🗑️ ลบเมนู</h3>
-          <form id="removeMenuForm">
-            <select id="removeType" title="หมวด">
-              <option value="food">อาหาร</option>
-              <option value="drink">เครื่องดื่ม</option>
-            </select>
-            <input type="number" id="removePage" min="0" placeholder="หน้า" title="หน้า" required>
-            <input type="text" id="removeName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
-            <button type="submit" title="ลบเมนู">ลบ</button>
-          </form>
-        </div>
+   
       </div>
       </div>
  
@@ -85,9 +63,34 @@
           เช็คบิล
         </button></center>
       
+        
       </div>
+      
     </div>
-  
+    <div id="menuManage">
+      <h3>➕ เพิ่มเมนู</h3>
+      <form id="addMenuForm">
+        <select id="addType" title="หมวด">
+          <option value="food">อาหาร</option>
+          <option value="drink">เครื่องดื่ม</option>
+        </select>
+        <input type="number" id="addPage" min="0" placeholder="หน้า" title="หน้า" required>
+        <input type="text" id="addName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
+        <input type="number" id="addPrice" min="0" placeholder="ราคา" title="ราคา" required>
+        <button type="submit" title="เพิ่มเมนู">เพิ่ม</button>
+      </form>
+    
+      <h3>🗑️ ลบเมนู</h3>
+      <form id="removeMenuForm">
+        <select id="removeType" title="หมวด">
+          <option value="food">อาหาร</option>
+          <option value="drink">เครื่องดื่ม</option>
+        </select>
+        <input type="number" id="removePage" min="0" placeholder="หน้า" title="หน้า" required>
+        <input type="text" id="removeName" placeholder="ชื่อเมนู" title="ชื่อเมนู" required>
+        <button type="submit" title="ลบเมนู">ลบ</button>
+      </form>
+    </div>
 
       
       
